@@ -4,7 +4,26 @@ const apiUrl = "https://ec-course-api.hexschool.io/v2";
 const app = createApp({
   data() {
     return {
-      products: [
+      products: "",
+      currentProduct: "",
+    };
+  },
+  methods: {
+    showSingleProduct(item) {
+      this.currentProduct = item;
+    },
+    checkLogin() {
+      axios
+        .post(`${apiUrl}/api/user/check`)
+        .then((res) => this.getData())
+        .catch((err) => {
+          console.log(err);
+          alert("請重新登入");
+          location.href = "index.html";
+        });
+    },
+    getData() {
+      this.products = [
         {
           category: "甜甜圈",
           content: "尺寸：14x14cm",
@@ -60,14 +79,16 @@ const app = createApp({
             "https://images.unsplash.com/photo-1540337706094-da10342c93d8?ixid=MnwxMjA3fDB8MHxzZWFyY2h8NDR8fGNha2V8ZW58MHx8MHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=60",
           ],
         },
-      ],
-      currentProduct: "",
-    };
-  },
-  methods: {
-    showSingleProduct(item) {
-      this.currentProduct = item;
+      ];
     },
+  },
+  mounted() {
+    const token = document.cookie.replace(
+      /(?:(?:^|.*;\s*)hexToken\s*\=\s*([^;]*).*$)|^.*$/,
+      "$1"
+    );
+    axios.defaults.headers.common["Authorization"] = token;
+    this.checkLogin();
   },
 });
 
